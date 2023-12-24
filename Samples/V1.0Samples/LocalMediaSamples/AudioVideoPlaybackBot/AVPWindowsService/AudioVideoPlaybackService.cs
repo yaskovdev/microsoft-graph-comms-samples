@@ -71,5 +71,12 @@ namespace AVPWindowsService
             EventLog.WriteEntry(SampleConstants.EventLogSource, "AudioVideoPlaybackService Service Stopped", EventLogEntryType.Warning);
             base.OnStop();
         }
+        
+        internal void InteractiveStartupAndStop(string[] args)  
+        {
+            OnStart(args);  
+            Console.ReadLine();  
+            OnStop();  
+        }
     }
 }

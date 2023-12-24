@@ -110,24 +110,24 @@ namespace AVPWindowsService
         /// videoFile location for the specified resolution.
         /// </summary>
 
-        private const string H2641280X72030FpsKey = "F:\\API\\AVB\\output720p.264";
+        private const string H2641280X72030FpsKey = "output720p.264";
 
         /// <summary>
         /// videoFile location for the specified resolution.
         /// </summary>
-        private const string H264640X36030FpsKey = "F:\\API\\AVB\\output360p.264";
+        private const string H264640X36030FpsKey = "output360p.264";
 
         /// <summary>
         /// videoFile location for the specified resolution.
         /// </summary>
-        private const string H264320X18015FpsKey = "F:\\API\\AVB\\output180p.264";
+        private const string H264320X18015FpsKey = "output180p.264";
 
         /// <summary>
         /// videoFile location for the specified resolution.
         /// </summary>
-        private const string H2641920X1080VBSS15FpsKey = "F:\\API\\AVB\\mle1080p15vbss_2500Kbps.264";
+        private const string H2641920X1080VBSS15FpsKey = "mle1080p15vbss_2500Kbps.264";
 
-        private const string AudioFileLocationKey = "F:\\API\\AVB\\downsampled.wav";
+        private const string AudioFileLocationKey = "downsampled.wav";
 
 
         private const string AudioVideoFileLengthInSecKey = "70";
@@ -262,10 +262,10 @@ namespace AVPWindowsService
                 ApplicationId = this.AadAppId,
             };
 
-            this.H2641280X72030FpsFile = H2641280X72030FpsKey;
-            this.H264320X18015FpsFile = H264320X18015FpsKey;
-            this.H264640X36030FpsFile = H264640X36030FpsKey;
-            this.H2641920X108015VBSSFpsFile = H2641920X1080VBSS15FpsKey;
+            H2641280X72030FpsFile = Util.GetResourcePath(H2641280X72030FpsKey);
+            H264320X18015FpsFile = Util.GetResourcePath(H264320X18015FpsKey);
+            H264640X36030FpsFile = Util.GetResourcePath(H264640X36030FpsKey);
+            H2641920X108015VBSSFpsFile = Util.GetResourcePath(H2641920X1080VBSS15FpsKey);
             if (string.IsNullOrEmpty(this.H2641280X72030FpsFile) ||
                 string.IsNullOrEmpty(this.H264320X18015FpsFile) ||
                 string.IsNullOrEmpty(this.H264640X36030FpsFile) ||
@@ -370,6 +370,8 @@ namespace AVPWindowsService
             this.CertificateThumbprint = envs.CertificateThumbprint;
             this.MediaInternalPort = envs.MediaInternalPort;
             this.MediaInstanceExternalPort = envs.MediaInstanceExternalPort;
+            MediaDnsName = envs.MediaDnsName;
+            UseLocalDevSettings = envs.UseLocalDevSettings;
         }
     }
 

@@ -61,5 +61,8 @@ namespace AVPWindowsService
         // set by dsc script
         public int BotInstanceExternalPort { get; set; }
         public int MediaInstanceExternalPort { get; set; }
+        
+        public string MediaDnsName { get; set; }
+        public bool UseLocalDevSettings { get; set; }
     }
 }

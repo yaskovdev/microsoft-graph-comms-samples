@@ -213,7 +213,9 @@
     <Compile Include="AudioVideoPlaybackService.Designer.cs">
       <DependentUpon>AudioVideoPlaybackService.cs</DependentUpon>
     </Compile>
+    <Compile Include="DotEnv.cs" />
     <Compile Include="EnvironmentVarConfigs.cs" />
+    <Compile Include="Util.cs" />
     <Compile Include="WindowsServiceConfiguration.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectInstaller.cs">
@@ -225,7 +227,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include=".env" />
+    <Content Include=".env" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\..\..\packages\Microsoft.Skype.Bots.Media.1.20.0.348-alpha\src\skype_media_lib\InstallMPServiceImpCounters.ps1">
       <Link>skype_media_lib\InstallMPServiceImpCounters.ps1</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

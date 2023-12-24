@@ -46,3 +46,16 @@ If you choose to go down this route, please take a look at the deployment steps 
 ## Run your bot locally
 
 To run your bot locally you will need to configure a local proxy.  [ngrok](https://ngrok.com/) is a great service that allows local proxy of both http (signalling) and tcp (media) traffic.  For more information please reference our [Local Testing Guide](https://microsoftgraph.github.io/microsoft-graph-comms-samples/docs/articles/Testing.html)
+
+Do not forget to update the values of `AzureSettings__ServiceDnsName` and `AzureSettings__MediaInstanceExternalPort`
+after every Ngrok restart.
+
+## Join a call
+
+To join a call, use the next cURL command (replace the `tenantId` and `joinURL` with your own):
+
+```powershell
+curl -v -X POST -H 'Content-Type: application/json' `
+    http://localhost:5228/joinCall `
+    -d '{ "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47", "joinURL": "https://teams.microsoft.com/l/meetup-join/19%3ameeting_MDA1NDJjZDgtNDRhYy00MGY4LWE2YzQtMjI1YzFlNTAzYzMw%40thread.v2/0?context=%7b%22Tid%22%3a%2272f988bf-86f1-41af-91ab-2d7cd011db47%22%2c%22Oid%22%3a%22b1b11b68-1839-4792-a462-1854254ddfe8%22%2c%22MessageId%22%3a%220%22%7d" }'
+```

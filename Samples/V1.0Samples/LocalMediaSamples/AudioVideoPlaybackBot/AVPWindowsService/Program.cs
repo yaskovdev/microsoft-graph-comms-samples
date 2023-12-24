@@ -1,26 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AVPWindowsService
+﻿namespace AVPWindowsService
 {
-    static class Program
+    using System;
+    using System.ServiceProcess;
+
+    internal static class Program
     {
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
-        static void Main()
+        private static void Main(string[] args)
         {
-            ServiceBase[] ServicesToRun;
-            ServicesToRun = new ServiceBase[]
+            if (Environment.UserInteractive)
             {
-                new AudioVideoPlaybackService()
-            };
-            ServiceBase.Run(ServicesToRun);
+                var environment = Util.GetResourcePath(".env");
+                DotEnv.Load(environment);
+                var service = new AudioVideoPlaybackService();
+                service.InteractiveStartupAndStop(args);
+            }
+            else
+            {
+                var servicesToRun = new ServiceBase[]
+                {
+                    new AudioVideoPlaybackService()
+                };
+                ServiceBase.Run(servicesToRun);
+            }
         }
     }
 }
