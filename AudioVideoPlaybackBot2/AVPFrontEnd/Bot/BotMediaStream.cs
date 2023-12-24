@@ -333,11 +333,11 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
         /// <param name="e">Event arguments.</param>
         private void OnVideoSendStatusChanged(object sender, VideoSendStatusChangedEventArgs e)
         {
-            this.logger.Info($"[VideoSendStatusChangedEventArgs(MediaSendStatus=<{e.MediaSendStatus}>]");
+            Console.WriteLine($"[VideoSendStatusChangedEventArgs(MediaSendStatus=<{e.MediaSendStatus}>]");
 
             if (e.MediaSendStatus == MediaSendStatus.Active)
             {
-                this.logger.Info($"[VideoSendStatusChangedEventArgs(MediaSendStatus=<{e.MediaSendStatus}>;PreferredVideoSourceFormat=<{string.Join(";", e.PreferredEncodedVideoSourceFormats.ToList())}>]");
+                Console.WriteLine($"[VideoSendStatusChangedEventArgs(MediaSendStatus=<{e.MediaSendStatus}>;PreferredVideoSourceFormat=<{string.Join(";", e.PreferredEncodedVideoSourceFormats.ToList())}>]");
 
                 var previousSupportedFormats = (this.videoKnownSupportedFormats != null && this.videoKnownSupportedFormats.Any()) ? this.videoKnownSupportedFormats :
                    new List<VideoFormat>();
@@ -356,7 +356,7 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
                         // we restart the player
                         this.audioVideoFramePlayer?.ClearAsync().ForgetAndLogExceptionAsync(this.logger);
 
-                        this.logger.Info($"[VideoSendStatusChangedEventArgs(MediaSendStatus=<{e.MediaSendStatus}> enqueuing new formats: {string.Join(";", this.videoKnownSupportedFormats)}]");
+                        Console.WriteLine($"[VideoSendStatusChangedEventArgs(MediaSendStatus=<{e.MediaSendStatus}> enqueuing new formats: {string.Join(";", this.videoKnownSupportedFormats)}]");
 
                         // Create the AV buffers
                         var currentTick = DateTime.Now.Ticks;

@@ -17,7 +17,6 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Http
     using System.Web.Http;
 
     using Microsoft.Graph;
-
     using Sample.AudioVideoPlaybackBot.FrontEnd.Bot;
 
     /// <summary>
