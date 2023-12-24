@@ -12,6 +12,11 @@
 
     <ItemGroup>
         <Content Include=".env" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="mle1080p15vbss_2500Kbps.264" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="output180p.264" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="output360p.264" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="output720p.264" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="downsampled.wav" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
     <ItemGroup>
