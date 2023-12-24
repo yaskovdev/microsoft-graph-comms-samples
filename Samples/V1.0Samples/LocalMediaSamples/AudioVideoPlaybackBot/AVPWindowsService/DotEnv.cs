@@ -2,21 +2,16 @@
 {
     using System;
     using System.IO;
+    using System.Linq;
 
     public static class DotEnv
     {
-        public static void Load(string filePath)
-        {
-            if (!File.Exists(filePath))
-                return;
-
-            foreach (var line in File.ReadAllLines(filePath))
-            {
-                var parts = line.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length != 2)
-                    continue;
-                Environment.SetEnvironmentVariable(parts[0], parts[1]);
-            }
-        }
+        public static void Load(string filePath) =>
+            File
+                .ReadAllLines(filePath)
+                .Select(line => line.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries))
+                .Where(parts => parts.Length == 2)
+                .ToList()
+                .ForEach(parts => Environment.SetEnvironmentVariable(parts[0], parts[1]));
     }
 }
