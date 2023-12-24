@@ -1,8 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioVideoPlaybackBot2", "AudioVideoPlaybackBot2\AudioVideoPlaybackBot2.csproj", "{77AFF5C1-D2E7-4971-9225-8FA5AA920D98}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVPWindowsService", "AVPWindowsService\AVPWindowsService.csproj", "{1ECD0C47-C02D-4A92-9F13-DA0C551FCE14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVPFrontEnd", "AVPFrontEnd\AVPFrontEnd.csproj", "{925309BF-5946-4C66-8BAC-739C144B201B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Common", "Sample.Common\Sample.Common.csproj", "{4CD0660E-953F-4908-8CF4-DA9BAEE2EB20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -10,13 +12,17 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{77AFF5C1-D2E7-4971-9225-8FA5AA920D98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{77AFF5C1-D2E7-4971-9225-8FA5AA920D98}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{77AFF5C1-D2E7-4971-9225-8FA5AA920D98}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{77AFF5C1-D2E7-4971-9225-8FA5AA920D98}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1ECD0C47-C02D-4A92-9F13-DA0C551FCE14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1ECD0C47-C02D-4A92-9F13-DA0C551FCE14}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1ECD0C47-C02D-4A92-9F13-DA0C551FCE14}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1ECD0C47-C02D-4A92-9F13-DA0C551FCE14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{925309BF-5946-4C66-8BAC-739C144B201B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{925309BF-5946-4C66-8BAC-739C144B201B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{925309BF-5946-4C66-8BAC-739C144B201B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{925309BF-5946-4C66-8BAC-739C144B201B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CD0660E-953F-4908-8CF4-DA9BAEE2EB20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CD0660E-953F-4908-8CF4-DA9BAEE2EB20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CD0660E-953F-4908-8CF4-DA9BAEE2EB20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CD0660E-953F-4908-8CF4-DA9BAEE2EB20}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
