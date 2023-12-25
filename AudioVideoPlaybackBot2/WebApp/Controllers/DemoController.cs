@@ -8,36 +8,42 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sample.AudioVideoPlaybackBot.FrontEnd.Http
+namespace WebApp.Controllers
 {
-    using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Net;
-    using System.Net.Http;
+    using Bot;
     using System.Text;
-    using System.Threading.Tasks;
-    using System.Web.Http;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Graph.Communications.Common.Telemetry;
     using Microsoft.Graph.Communications.Core.Serialization;
-    using Sample.AudioVideoPlaybackBot.FrontEnd.Bot;
     using Sample.Common.Logging;
 
     /// <summary>
     /// DemoController serves as the gateway to explore the bot.
     /// From here you can get a list of calls, and functions for each call.
     /// </summary>
-    public class DemoController : ApiController
+    [ApiController]
+    public class DemoController : ControllerBase
     {
+        private readonly IBot _bot;
+        private readonly IConfiguration _configuration;
+
+        public DemoController(IBot bot, IConfiguration configuration)
+        {
+            _bot = bot;
+            _configuration = configuration;
+        }
+
         /// <summary>
         /// Gets the logger instance.
         /// </summary>
-        private IGraphLogger Logger => Bot.Instance.Logger;
+        private IGraphLogger Logger => _bot.Logger;
 
         /// <summary>
         /// Gets the sample log observer.
         /// </summary>
-        private SampleObserver Observer => Bot.Instance.Observer;
+        private SampleObserver Observer => _bot.Observer;
 
         /// <summary>
         /// The GET logs.
@@ -47,18 +53,15 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Http
         /// <returns>
         /// The <see cref="Task" />.
         /// </returns>
-        [HttpGet]
-        [Route(HttpRouteConstants.Logs + "/")]
-        public HttpResponseMessage OnGetLogs(
+        [HttpGet(HttpRouteConstants.Logs + "/")]
+        public IActionResult OnGetLogs(
             int skip = 0,
             int take = 1000)
         {
             EventLog.WriteEntry(SampleConstants.EventLogSource, $"Serving {HttpRouteConstants.Logs}/", EventLogEntryType.Information);
             var logs = this.Observer.GetLogs(skip, take);
 
-            var response = this.Request.CreateResponse(HttpStatusCode.OK);
-            response.Content = new StringContent(logs, Encoding.UTF8, "text/plain");
-            return response;
+            return Ok(logs);
         }
 
         /// <summary>
@@ -70,9 +73,8 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Http
         /// <returns>
         /// The <see cref="Task" />.
         /// </returns>
-        [HttpGet]
-        [Route(HttpRouteConstants.Logs + "/{filter}")]
-        public HttpResponseMessage OnGetLogs(
+        [HttpGet(HttpRouteConstants.Logs + "/{filter}")]
+        public IActionResult OnGetLogs(
             string filter,
             int skip = 0,
             int take = 1000)
@@ -80,9 +82,7 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Http
             EventLog.WriteEntry(SampleConstants.EventLogSource, $"Serving {HttpRouteConstants.Logs}/{filter}", EventLogEntryType.Information);
             var logs = this.Observer.GetLogs(filter, skip, take);
 
-            var response = this.Request.CreateResponse(HttpStatusCode.OK);
-            response.Content = new StringContent(logs, Encoding.UTF8, "text/plain");
-            return response;
+            return Ok(logs);
         }
 
         /// <summary>
@@ -91,24 +91,23 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Http
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        [HttpGet]
-        [Route(HttpRouteConstants.Calls + "/")]
-        public HttpResponseMessage OnGetCalls()
+        [HttpGet(HttpRouteConstants.Calls + "/")]
+        public IActionResult OnGetCalls()
         {
             EventLog.WriteEntry(SampleConstants.EventLogSource, $"Serving {HttpRouteConstants.Calls}/", EventLogEntryType.Information);
             this.Logger.Info("Getting calls");
 
-            if (Bot.Instance.CallHandlers.IsEmpty)
+            if (_bot.CallHandlers.IsEmpty)
             {
-                return this.Request.CreateResponse(HttpStatusCode.NoContent);
+                return StatusCode((int)HttpStatusCode.NoContent);
             }
 
             var calls = new List<Dictionary<string, string>>();
-            foreach (var callHandler in Bot.Instance.CallHandlers.Values)
+            foreach (var callHandler in _bot.CallHandlers.Values)
             {
                 var call = callHandler.Call;
                 var callPath = "/" + HttpRouteConstants.CallRoute.Replace("{callLegId}", call.Id);
-                var callUri = new Uri(Service.Instance.Configuration.CallControlBaseUrl, callPath).AbsoluteUri;
+                var callUri = new Uri(_configuration.CallControlBaseUrl, callPath).AbsoluteUri;
                 var values = new Dictionary<string, string>
                 {
                     { "legId", call.Id },
@@ -122,9 +121,7 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Http
 
             var serializer = new CommsSerializer(pretty: true);
             var json = serializer.SerializeObject(calls);
-            var response = this.Request.CreateResponse(HttpStatusCode.OK);
-            response.Content = new StringContent(json, Encoding.UTF8, "application/json");
-            return response;
+            return Ok(json);
         }
 
         /// <summary>
@@ -136,25 +133,22 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Http
         /// <returns>
         /// The <see cref="HttpResponseMessage"/>.
         /// </returns>
-        [HttpDelete]
-        [Route(HttpRouteConstants.CallRoute)]
-        public async Task<HttpResponseMessage> OnEndCallAsync(string callLegId)
+        [HttpDelete(HttpRouteConstants.CallRoute)]
+        public async Task<IActionResult> OnEndCallAsync(string callLegId)
         {
             EventLog.WriteEntry(SampleConstants.EventLogSource, $"Serving {HttpRouteConstants.CallRoute}", EventLogEntryType.Information);
             this.Logger.Info($"Ending call {callLegId}");
 
             try
             {
-                var removed = await Bot.Instance.EndCallByCallLegIdAsync(callLegId).ConfigureAwait(false);
+                var removed = await _bot.EndCallByCallLegIdAsync(callLegId).ConfigureAwait(false);
                 return removed
-                    ? this.Request.CreateResponse(HttpStatusCode.OK)
-                    : this.Request.CreateResponse(HttpStatusCode.NotFound);
+                    ? Ok()
+                    : NotFound();
             }
             catch (Exception e)
             {
-                var response = this.Request.CreateResponse(HttpStatusCode.InternalServerError);
-                response.Content = new StringContent(e.ToString());
-                return response;
+                return Problem(e.ToString());
             }
         }
     }

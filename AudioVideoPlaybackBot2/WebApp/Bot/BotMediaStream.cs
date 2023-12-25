@@ -8,13 +8,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
+namespace WebApp.Bot
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Microsoft.Graph.Communications.Calls.Media;
     using Microsoft.Graph.Communications.Common.Telemetry;
     using Microsoft.Skype.Bots.Media;
@@ -351,7 +346,7 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
                     if (this.videoKnownSupportedFormats != null && this.videoKnownSupportedFormats.Any() &&
 
                         // here it means we got a new video fromat so we need to restart the player
-                        this.videoKnownSupportedFormats.Select(x => x.GetId()).Except(previousSupportedFormats.Select(y => y.GetId())).Any())
+                        this.videoKnownSupportedFormats.Select(x => x.GetId()).Except<int>(previousSupportedFormats.Select(y => y.GetId())).Any())
                     {
                         // we restart the player
                         this.audioVideoFramePlayer?.ClearAsync().ForgetAndLogExceptionAsync(this.logger);

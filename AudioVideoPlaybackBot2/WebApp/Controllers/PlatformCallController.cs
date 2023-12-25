@@ -3,30 +3,36 @@
 // Licensed under the MIT license.
 // </copyright>
 
-namespace Sample.AudioVideoPlaybackBot.FrontEnd.Http
+namespace WebApp.Controllers
 {
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using System.Web.Http;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Graph.Communications.Client;
+    using Bot;
+    using Microsoft.AspNetCore.Mvc.WebApiCompatShim;
     using Microsoft.Graph.Communications.Common.Telemetry;
-    using Sample.AudioVideoPlaybackBot.FrontEnd.Bot;
 
     /// <summary>
     /// Entry point for handling call-related web hook requests from Skype Platform.
     /// </summary>
-    [RoutePrefix(HttpRouteConstants.CallSignalingRoutePrefix)]
-    public class PlatformCallController : ApiController
+    [ApiController]
+    public class PlatformCallController : ControllerBase
     {
+        private readonly IBot _bot;
+
+        public PlatformCallController(IBot bot)
+        {
+            _bot = bot;
+        }
+
         /// <summary>
         /// Gets the logger instance.
         /// </summary>
-        private IGraphLogger Logger => Bot.Instance.Logger;
+        private IGraphLogger Logger => _bot.Logger;
 
         /// <summary>
         /// Gets a reference to singleton sample bot/client instance.
         /// </summary>
-        private ICommunicationsClient Client => Bot.Instance.Client;
+        private ICommunicationsClient Client => _bot.Client;
 
         /// <summary>
         /// Handle a callback for an existing call.
@@ -34,16 +40,15 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Http
         /// <returns>
         /// The <see cref="HttpResponseMessage"/>.
         /// </returns>
-        [HttpPost]
-        [Route(HttpRouteConstants.OnIncomingRequestRoute)]
-
-        // [BotAuthentication]
+        [HttpPost(HttpRouteConstants.CallSignalingRoutePrefix)]
         public async Task<HttpResponseMessage> OnIncomingRequestAsync()
         {
-            this.Logger.Info($"Received HTTP {this.Request.Method}, {this.Request.RequestUri}");
+            var httpRequestMessageFeature = new HttpRequestMessageFeature(Request.HttpContext);
+            var request = httpRequestMessageFeature.HttpRequestMessage;
+            this.Logger.Info($"Received HTTP {this.Request.Method}, {request.RequestUri}");
 
             // Pass the incoming message to the sdk. The sdk takes care of what to do with it.
-            var response = await this.Client.ProcessNotificationAsync(this.Request).ConfigureAwait(false);
+            var response = await this.Client.ProcessNotificationAsync(request).ConfigureAwait(false);
 
             // Enforce the connection close to ensure that requests are evenly load balanced so
             // calls do no stick to one instance of the worker role.

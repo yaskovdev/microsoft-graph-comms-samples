@@ -8,9 +8,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sample.AudioVideoPlaybackBot.FrontEnd
+namespace WebApp
 {
-    using System.Collections.Generic;
     using Microsoft.Skype.Bots.Media;
 
     /// <summary>

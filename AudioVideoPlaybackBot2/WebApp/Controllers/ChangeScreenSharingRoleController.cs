@@ -8,22 +8,26 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sample.AudioVideoPlaybackBot.FrontEnd.Http
+namespace WebApp.Controllers
 {
-    using System;
     using System.Net;
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using System.Web.Http;
-
+    using Bot;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Graph;
-    using Sample.AudioVideoPlaybackBot.FrontEnd.Bot;
 
     /// <summary>
     /// ChangeScreenSharingRoleController is a third-party controller (non-Bot Framework) that changes the bot's screen sharing role.
     /// </summary>
-    public class ChangeScreenSharingRoleController : ApiController
+    [ApiController]
+    public class ChangeScreenSharingRoleController : ControllerBase
     {
+        private readonly IBot _bot;
+
+        public ChangeScreenSharingRoleController(IBot bot)
+        {
+            _bot = bot;
+        }
+
         /// <summary>
         /// Changes screen sharing role.
         /// </summary>
@@ -36,18 +40,17 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Http
         /// <returns>
         /// The <see cref="HttpResponseMessage"/>.
         /// </returns>
-        [HttpPost]
-        [Route(HttpRouteConstants.CallRoute + "/" + HttpRouteConstants.OnChangeRoleRoute)]
-        public async Task<HttpResponseMessage> ChangeScreenSharingRoleAsync(string callLegId, [FromBody] ChangeRoleBody changeRoleBody)
+        [HttpPost(HttpRouteConstants.CallRoute + "/" + HttpRouteConstants.OnChangeRoleRoute)]
+        public async Task<IActionResult> ChangeScreenSharingRoleAsync(string callLegId, [FromBody] ChangeRoleBody changeRoleBody)
         {
             try
             {
-                await Bot.Instance.ChangeSharingRoleAsync(callLegId, changeRoleBody.Role).ConfigureAwait(false);
-                return this.Request.CreateResponse(HttpStatusCode.OK);
+                await _bot.ChangeSharingRoleAsync(callLegId, changeRoleBody.Role).ConfigureAwait(false);
+                return Ok();
             }
             catch (Exception e)
             {
-                return e.InspectExceptionAndReturnResponse();
+                return StatusCode((int)e.InspectExceptionAndReturnResponse().StatusCode);
             }
         }
 

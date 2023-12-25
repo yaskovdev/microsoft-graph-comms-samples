@@ -8,22 +8,16 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sample.AudioVideoPlaybackBot.FrontEnd.Http.Controllers
+namespace WebApp.Controllers
 {
-    using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Http;
-    using System.Text;
-    using System.Threading.Tasks;
-    using System.Web.Http;
+    using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
     /// HealthController serves health status for the service.
     /// </summary>
-    public class HealthController : ApiController
+    [ApiController]
+    public class HealthController : ControllerBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="HealthController" /> class.
@@ -36,13 +30,11 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Http.Controllers
         /// Handle a callback for an incoming call.
         /// </summary>
         /// <returns>The <see cref="HttpResponseMessage" />.</returns>
-        [HttpGet]
-        [Route(HttpRouteConstants.HealthRoute)]
-        public HttpResponseMessage Health()
+        [HttpGet(HttpRouteConstants.HealthRoute)]
+        public IActionResult Health()
         {
             EventLog.WriteEntry(SampleConstants.EventLogSource, $"Serving {HttpRouteConstants.HealthRoute}", EventLogEntryType.Information);
-            var response = this.Request.CreateResponse(HttpStatusCode.OK);
-            return response;
+            return Ok();
         }
     }
 }

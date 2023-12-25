@@ -13,11 +13,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sample.AudioVideoPlaybackBot.FrontEnd
+namespace WebApp
 {
-    using System;
-    using System.Collections.Generic;
-
     using Microsoft.Skype.Bots.Media;
 
     /// <summary>
@@ -35,12 +32,6 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd
         /// Gets the DNS name for this service.
         /// </summary>
         string ServiceDnsName { get; }
-
-        /// <summary>
-        /// Gets the List of HTTP URLs the app should listen on for incoming call
-        /// signaling requests from Skype Platform.
-        /// </summary>
-        IEnumerable<Uri> CallControlListeningUrls { get; }
 
         /// <summary>
         /// Gets the base callback URL for this instance.  To ensure that all requests
@@ -68,20 +59,5 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd
         /// Gets the Settings for the bot media platform.
         /// </summary>
         MediaPlatformSettings MediaPlatformSettings { get; }
-
-        /// <summary>
-        /// Gets locations of video files.
-        /// </summary>
-        Dictionary<string, VideoFormat> H264FileLocations { get; }
-
-        /// <summary>
-        /// Gets the location of the audio files.
-        /// </summary>
-        string AudioFileLocation { get; }
-
-        /// <summary>
-        /// Gets the lenghth of the audio video file.
-        /// </summary>
-        int AudioVideoFileLengthInSec { get; }
     }
 }

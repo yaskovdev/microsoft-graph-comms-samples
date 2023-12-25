@@ -8,11 +8,9 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
+namespace WebApp.Bot
 {
-    using System;
     using System.Net;
-    using System.Net.Http;
     using Microsoft.Graph;
 
     /// <summary>
@@ -37,7 +35,7 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
                 {
                     foreach (var responseHeader in e.ResponseHeaders)
                     {
-                        responseToReturn.Headers.TryAddWithoutValidation(responseHeader.Key, responseHeader.Value);
+                        responseToReturn.Headers.TryAddWithoutValidation((string)responseHeader.Key, (IEnumerable<string?>)responseHeader.Value);
                     }
                 }
 

@@ -3,13 +3,9 @@
 // Licensed under the MIT license.
 // </copyright>
 
-namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
+namespace WebApp.Bot
 {
-    using System;
     using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using System.Timers;
     using Microsoft.Graph;
     using Microsoft.Graph.Communications.Calls;
@@ -173,7 +169,7 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
 
             if (participantSendCapableVideoStream != null)
             {
-                var msi = uint.Parse(participantSendCapableVideoStream.SourceId);
+                var msi = uint.Parse((string)participantSendCapableVideoStream.SourceId);
                 lock (this.subscriptionLock)
                 {
                     if (this.currentVideoSubscriptions.TryRemove(msi))
@@ -206,7 +202,7 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
             if (participantSendCapableVideoStream != null)
             {
                 bool updateMSICache = false;
-                var msi = uint.Parse(participantSendCapableVideoStream.SourceId);
+                var msi = uint.Parse((string)participantSendCapableVideoStream.SourceId);
                 lock (this.subscriptionLock)
                 {
                     if (this.currentVideoSubscriptions.Count < this.Call.GetLocalMediaSession().VideoSockets.Count)
@@ -260,7 +256,7 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
             {
                 // new sharer
                 this.GraphLogger.Info($"[{this.Call.Id}:SubscribeToParticipant(subscribing to the VBSS sharer {participant.Id})");
-                this.BotMediaStream.Subscribe(MediaType.Vbss, uint.Parse(vbssParticipant.SourceId), VideoResolution.HD1080p, socketId);
+                this.BotMediaStream.Subscribe(MediaType.Vbss, uint.Parse((string)vbssParticipant.SourceId), VideoResolution.HD1080p, socketId);
             }
         }
 
@@ -311,7 +307,7 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
         /// </summary>
         /// <param name="msi">media stream id.</param>
         /// <returns>
-        /// The <see cref="IParticipant"/>.
+        /// The <see cref="Microsoft.Graph.Communications.Calls.IParticipant"/>.
         /// </returns>
         private IParticipant GetParticipantFromMSI(uint msi)
         {

@@ -8,7 +8,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sample.AudioVideoPlaybackBot.FrontEnd.Http
+namespace WebApp.Controllers
 {
     /// <summary>
     /// HTTP route constants for routing requests to CallController methods.

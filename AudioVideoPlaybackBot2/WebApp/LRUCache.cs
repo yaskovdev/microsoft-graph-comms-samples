@@ -8,10 +8,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sample.AudioVideoPlaybackBot.FrontEnd
+namespace WebApp
 {
-    using System;
-
     /// <summary>
     /// Helper LRUCache used for the multiview subscription process.
     /// </summary>

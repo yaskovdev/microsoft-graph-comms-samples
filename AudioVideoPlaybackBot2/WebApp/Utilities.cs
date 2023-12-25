@@ -8,13 +8,10 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Sample.AudioVideoPlaybackBot.FrontEnd
+namespace WebApp
 {
-    using System;
     using System.Collections.Concurrent;
-    using System.Collections.Generic;
     using System.Diagnostics;
-    using System.IO;
     using System.Runtime.InteropServices;
     using Microsoft.Graph.Communications.Calls.Media;
     using Microsoft.Graph.Communications.Common.Telemetry;
@@ -26,9 +23,22 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd
     /// </summary>
     internal static class Utilities
     {
+        private const string H264320X18015FpsKey = "output180p.264";
+        private const string H264640X36030FpsKey = "output360p.264";
+        private const string H2641280X72030FpsKey = "output720p.264";
+        private const string H2641920X1080VBSS15FpsKey = "mle1080p15vbss_2500Kbps.264";
+
         private const double TicksInOneMs = 10000.0;
         private const double MsInOneSec = 1000.0;
         private static readonly ConcurrentDictionary<int, List<H264Frame>> H264Frames;
+
+        private static readonly Dictionary<string, VideoFormat> H264FileLocations = new()
+        {
+            { Util.GetResourcePath(H264320X18015FpsKey), VideoFormat.H264_320x180_15Fps },
+            { Util.GetResourcePath(H264640X36030FpsKey), VideoFormat.H264_640x360_30Fps },
+            { Util.GetResourcePath(H2641280X72030FpsKey), VideoFormat.H264_1280x720_30Fps },
+            { Util.GetResourcePath(H2641920X1080VBSS15FpsKey), VideoFormat.H264_1920x1080_15Fps }
+        };
 
         /// <summary>
         /// Initializes static members of the <see cref="Utilities"/> class.
@@ -37,14 +47,14 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd
         static Utilities()
         {
             H264Frames = new ConcurrentDictionary<int, List<H264Frame>>();
-            foreach (var videoFormatEntry in Service.Instance.Configuration.H264FileLocations)
+            foreach (var videoFormatEntry in H264FileLocations)
             {
                 var videoFormat = videoFormatEntry.Value;
                 var fileReader = new H264FileReader(
-                                    videoFormatEntry.Key,
-                                    (uint)videoFormat.Width,
-                                    (uint)videoFormat.Height,
-                                    videoFormat.FrameRate);
+                    videoFormatEntry.Key,
+                    (uint)videoFormat.Width,
+                    (uint)videoFormat.Height,
+                    videoFormat.FrameRate);
 
                 var listOfFrames = new List<H264Frame>();
                 var totalNumberOfFrames = fileReader.GetTotalNumberOfFrames();
@@ -137,7 +147,7 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd
                 referenceTime += numberOfTicksInOneAudioBuffers;
             }
 
-            using (FileStream fs = File.Open(Service.Instance.Configuration.AudioFileLocation, FileMode.Open))
+            using (FileStream fs = File.Open(Util.GetResourcePath("downsampled.wav"), FileMode.Open))
             {
                 byte[] bytesToRead = new byte[640];
 

@@ -3,14 +3,11 @@
 // Licensed under the MIT license.
 // </copyright>
 
-namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
+namespace WebApp.Bot
 {
-    using System;
     using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Data;
     using System.Diagnostics;
-    using System.Threading.Tasks;
+    using Controllers;
     using Microsoft.Graph;
     using Microsoft.Graph.Communications.Calls;
     using Microsoft.Graph.Communications.Calls.Media;
@@ -19,8 +16,6 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
     using Microsoft.Graph.Communications.Common.Telemetry;
     using Microsoft.Graph.Communications.Resources;
     using Microsoft.Skype.Bots.Media;
-    using Sample.AudioVideoPlaybackBot.FrontEnd;
-    using Sample.AudioVideoPlaybackBot.FrontEnd.Http;
     using Sample.Common;
     using Sample.Common.Authentication;
     using Sample.Common.Logging;
@@ -30,13 +25,8 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
     /// <summary>
     /// The core bot logic.
     /// </summary>
-    internal class Bot : IDisposable
+    internal class Bot : IBot
     {
-        /// <summary>
-        /// Gets the instance of the bot.
-        /// </summary>
-        public static Bot Instance { get; } = new Bot();
-
         /// <summary>
         /// Gets the Graph Logger instance.
         /// </summary>
@@ -65,11 +55,44 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
         /// </value>
         public OnlineMeetingHelper OnlineMeetings { get; private set; }
 
+        public Bot(IConfiguration configuration, IGraphLogger logger)
+        {
+            Validator.IsNull(this.Logger, "Multiple initializations are not allowed.");
+
+            this.Logger = logger;
+            this.Observer = new SampleObserver(logger);
+            EventLog.WriteEntry("AudioVideoPlaybackService", "Initialize Bot.cs", EventLogEntryType.Warning);
+
+            var name = this.GetType().Assembly.GetName().Name;
+            var builder = new CommunicationsClientBuilder(
+                name,
+                configuration.AadAppId,
+                this.Logger);
+
+            var authProvider = new AuthenticationProvider(
+                name,
+                configuration.AadAppId,
+                configuration.AadAppSecret,
+                this.Logger);
+
+            builder.SetAuthenticationProvider(authProvider);
+            builder.SetNotificationUrl(configuration.CallControlBaseUrl);
+            builder.SetMediaPlatformSettings(configuration.MediaPlatformSettings);
+            builder.SetServiceBaseUrl(configuration.PlaceCallEndpointUrl);
+
+            this.Client = builder.Build();
+            this.Client.Calls().OnIncoming += this.CallsOnIncoming;
+            this.Client.Calls().OnUpdated += this.CallsOnUpdated;
+
+            this.OnlineMeetings = new OnlineMeetingHelper(authProvider, configuration.PlaceCallEndpointUrl);
+            EventLog.WriteEntry("AudioVideoPlaybackService", "Initialize complete Bot.cs", EventLogEntryType.Warning);
+        }
+
         /// <summary>
         /// Joins the call asynchronously.
         /// </summary>
         /// <param name="joinCallBody">The join call body.</param>
-        /// <returns>The <see cref="ICall"/> that was requested to join.</returns>
+        /// <returns>The <see cref="Microsoft.Graph.Communications.Calls.ICall"/> that was requested to join.</returns>
         public async Task<ICall> JoinCallAsync(JoinCallController.JoinCallBody joinCallBody)
         {
             EventLog.WriteEntry("AudioVideoPlaybackService", "Bot.cs JoinCallAsync called", EventLogEntryType.Warning);
@@ -170,44 +193,6 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
         }
 
         /// <summary>
-        /// Initialize the instance.
-        /// </summary>
-        /// <param name="service">Service instance.</param>
-        /// <param name="logger">Graph logger.</param>
-        internal void Initialize(Service service, IGraphLogger logger)
-        {
-            Validator.IsNull(this.Logger, "Multiple initializations are not allowed.");
-
-            this.Logger = logger;
-            this.Observer = new SampleObserver(logger);
-            EventLog.WriteEntry("AudioVideoPlaybackService", "Initialize Bot.cs", EventLogEntryType.Warning);
-
-            var name = this.GetType().Assembly.GetName().Name;
-            var builder = new CommunicationsClientBuilder(
-                name,
-                service.Configuration.AadAppId,
-                this.Logger);
-
-            var authProvider = new AuthenticationProvider(
-                name,
-                service.Configuration.AadAppId,
-                service.Configuration.AadAppSecret,
-                this.Logger);
-
-            builder.SetAuthenticationProvider(authProvider);
-            builder.SetNotificationUrl(service.Configuration.CallControlBaseUrl);
-            builder.SetMediaPlatformSettings(service.Configuration.MediaPlatformSettings);
-            builder.SetServiceBaseUrl(service.Configuration.PlaceCallEndpointUrl);
-
-            this.Client = builder.Build();
-            this.Client.Calls().OnIncoming += this.CallsOnIncoming;
-            this.Client.Calls().OnUpdated += this.CallsOnUpdated;
-
-            this.OnlineMeetings = new OnlineMeetingHelper(authProvider, service.Configuration.PlaceCallEndpointUrl);
-            EventLog.WriteEntry("AudioVideoPlaybackService", "Initialize complete Bot.cs", EventLogEntryType.Warning);
-        }
-
-        /// <summary>
         /// End a particular call.
         /// </summary>
         /// <param name="callLegId">
@@ -216,7 +201,7 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
         /// <returns>
         /// The <see cref="Task"/>.
         /// </returns>
-        internal async Task<bool> EndCallByCallLegIdAsync(string callLegId)
+        public async Task<bool> EndCallByCallLegIdAsync(string callLegId)
         {
             try
             {
@@ -240,7 +225,7 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
         /// The media session identifier.
         /// This should be a unique value for each call.
         /// </param>
-        /// <returns>The <see cref="ILocalMediaSession"/>.</returns>
+        /// <returns>The <see cref="Microsoft.Graph.Communications.Calls.Media.ILocalMediaSession"/>.</returns>
         private ILocalMediaSession CreateLocalMediaSession(Guid mediaSessionId = default(Guid))
         {
             var videoSocketSettings = new List<VideoSocketSettings>
@@ -299,12 +284,12 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
         /// Incoming call handler.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        /// <param name="args">The <see cref="CollectionEventArgs{TEntity}"/> instance containing the event data.</param>
+        /// <param name="args">The <see cref="Microsoft.Graph.Communications.Resources.CollectionEventArgs{TResource}"/> instance containing the event data.</param>
         private void CallsOnIncoming(ICallCollection sender, CollectionEventArgs<ICall> args)
         {
             args.AddedResources.ForEach(call =>
             {
-                IMediaSession mediaSession = Guid.TryParse(call.Id, out Guid callId)
+                IMediaSession mediaSession = Guid.TryParse((string?)call.Id, out Guid callId)
                     ? this.CreateLocalMediaSession(callId)
                     : this.CreateLocalMediaSession();
 
@@ -318,8 +303,8 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
         /// <summary>
         /// Updated call handler.
         /// </summary>
-        /// <param name="sender">The <see cref="ICallCollection"/> sender.</param>
-        /// <param name="args">The <see cref="CollectionEventArgs{ICall}"/> instance containing the event data.</param>
+        /// <param name="sender">The <see cref="Microsoft.Graph.Communications.Calls.ICallCollection"/> sender.</param>
+        /// <param name="args">The <see cref="Microsoft.Graph.Communications.Resources.CollectionEventArgs{TResource}"/> instance containing the event data.</param>
         private void CallsOnUpdated(ICallCollection sender, CollectionEventArgs<ICall> args)
         {
             foreach (var call in args.AddedResources)
