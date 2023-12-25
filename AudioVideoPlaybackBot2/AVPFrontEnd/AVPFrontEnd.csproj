@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net472</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     </PropertyGroup>
 
@@ -11,15 +11,11 @@
         <PackageReference Include="Microsoft.Skype.Bots.Media" Version="1.27.0.2-alpha" GeneratePathProperty="true" />
         <Reference Include="Microsoft.Skype.Internal.Media.H264, Version=0.0.0.0, Culture=neutral, processorArchitecture=AMD64">
             <SpecificVersion>False</SpecificVersion>
-            <HintPath>$(PkgConfigTransformationTool)\src\skype_media_lib\Microsoft.Skype.Internal.Media.H264.dll</HintPath>
+            <HintPath>$(PkgMicrosoft_Skype_Bots_Media)\src\skype_media_lib\Microsoft.Skype.Internal.Media.H264.dll</HintPath>
         </Reference>
         <PackageReference Include="Microsoft.Owin.Host.HttpListener" Version="4.2.2" />
         <PackageReference Include="Microsoft.Owin.Hosting" Version="4.2.2" />
         <PackageReference Include="Microsoft.AspNet.WebApi.Owin" Version="5.2.7" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Reference Include="System.Data.Entity" />
     </ItemGroup>
 
     <ItemGroup>

@@ -352,7 +352,7 @@ namespace Sample.AudioVideoPlaybackBot.FrontEnd.Bot
         {
             if (!this.CallHandlers.TryGetValue(callLegId, out CallHandler handler))
             {
-                throw new ObjectNotFoundException($"call ({callLegId}) not found");
+                throw new Exception($"call ({callLegId}) not found");
             }
 
             return handler;
